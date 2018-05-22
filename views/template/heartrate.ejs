@@ -1,0 +1,122 @@
+<%layout('../layout')%>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header" >Senior Citizen Assistance App</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<!--<script src="https://code.highcharts.com/highcharts-3d.js"></script>-->
+
+
+
+
+
+<!--starting div for highchart for heart bar graphs-->
+ <!-- <div style="width:560px;"> -->
+<div id="containerheart" style="min-width:100px; height: 400px; margin: 0 auto"></div>
+
+<!-- </div> -->
+    <!--ending div for highchart for heart bar graphs-->
+
+<!--Starting div for highchart for step bar graphs-->
+</div>
+
+    <script>
+    var access_token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2SDNTQlEiLCJhdWQiOiIyMkNQMlAiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd251dCB3cHJvIHdzbGUgd3dlaSB3c29jIHdzZXQgd2FjdCB3bG9jIiwiZXhwIjoxNTU2NTI1NDU5LCJpYXQiOjE1MjQ5ODk0NTl9.RPWUBdOMpGa0JAId0vlJZVQDDEn8yGfCYcTs1x4niSA";
+    var heart_dates=[];
+    var heart_values=[];
+    var week_dates=[];
+    var heart_rate=[];
+
+    function heartData(heart){
+    $.ajax({
+      headers:
+      {
+        //"Authorization":"Bearer " + access_token
+      },
+
+      url: "https://2d6u0kva1b.execute-api.us-east-2.amazonaws.com/ihealthall/ihealthall",
+      dataType: 'json',
+      success: function(data) {
+      heart(data);
+      },
+      error: function() {
+        alert("error");
+      }
+    });
+    }
+
+    //iterating through json data
+  heartData(function(value){
+      var x=value['BPDataList'];
+      for(var i=0;i<x.length;i++){
+        var timestamp=value['BPDataList'][i]['MDate'];
+        var date = new Date(timestamp * 1000);
+        var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
+        heart_dates.push(formattedDate);
+        heart_rate.push(value['BPDataList'][i]['HR']);
+        }
+         //last one week dates
+        week_dates=heart_dates.slice(heart_dates.length - 7, heart_dates.length);
+        values=heart_rate.slice(heart_rate.length - 7, heart_rate.length);
+        //console.log(values);
+
+
+<!--starting script for highchart for heart bar graphs-->
+
+Highcharts.chart('containerheart', {
+
+chart: {
+  type: 'column'
+},
+
+title: {
+  text: 'Heart Beat Information'
+},
+
+xAxis: {
+  categories: week_dates
+},
+
+yAxis: {
+  allowDecimals: false,
+  min: 0,
+  title: {
+      text: 'Heart Beat'
+  }
+},
+
+tooltip: {
+  formatter: function () {
+      return '<b>' + this.x + '</b><br/>' +
+          this.series.name + ': ' + this.y + '<br/>' +
+          'Total: ' + this.point.stackTotal;
+  }
+},
+
+plotOptions: {
+  column: {
+      stacking: 'normal'
+  }
+},
+
+series: [{
+  data: values
+}]
+});
+});
+        </script>
+    <!--ending script for highchart for heart bar graphs-->
+
+<!--starting script for highchart for sleep bar graphs-->
+<!--ending script for highchart for step bar graphs-->
+
+
+
+</div>
+<!-- /#page-wrapper -->

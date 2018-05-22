@@ -1,0 +1,117 @@
+<%layout('../layout')%>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header" >Senior Citizen Assistance App</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<!--<script src="https://code.highcharts.com/highcharts-3d.js"></script>-->
+
+
+
+
+
+<!--starting div for highchart for heart bar graphs-->
+ <!-- <div style="width:560px;"> -->
+<div id="containerbp" style="min-width: 100px; height: 400px; margin-top: 100px"></div>
+
+<!-- </div> -->
+    <!--ending div for highchart for heart bar graphs-->
+
+<!--Starting div for highchart for step bar graphs-->
+<!--ending div for highchart for sleep bar graphs-->
+</div>
+
+    <script>
+    var access_token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2SDNTQlEiLCJhdWQiOiIyMkNQMlAiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3YWN0IiwiZXhwIjoxNTI1NzcyODQwLCJpYXQiOjE1MjU3NDQwNDB9.-2zbI6BU7YV26cjO21QYu_U7WE-hz9N3gvxjyZnZ8gw";
+    var heart_dates=[];
+    var heart_values=[];
+    var week_dates=[];
+    var hp=[];
+    var lp=[];
+    var values_hp=[];
+    var values_lp=[];
+
+    function heartData(heart){
+    $.ajax({
+      headers:
+      {
+        //"Authorization":"Bearer " + access_token
+      },
+
+      url: "https://2d6u0kva1b.execute-api.us-east-2.amazonaws.com/ihealthall/ihealthall",
+      dataType: 'json',
+      success: function(data) {
+      heart(data);
+      },
+      error: function() {
+        alert("error");
+      }
+    });
+    }
+
+    //iterating through json data
+  heartData(function(value){
+      var x=value['BPDataList'];
+      for(var i=0;i<x.length;i++){
+        var timestamp=value['BPDataList'][i]['MDate'];
+        var date = new Date(timestamp * 1000);
+        var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
+        heart_dates.push(formattedDate);
+        hp.push(value['BPDataList'][i]['HP']);
+        lp.push(value['BPDataList'][i]['LP']);
+        }
+         //last one week dates
+        week_dates=heart_dates.slice(heart_dates.length - 7, heart_dates.length);
+        values_hp=hp.slice(hp.length - 7, hp.length);
+        values_lp=lp.slice(lp.length - 7, lp.length);
+
+        //console.log(values);
+
+
+<!--starting script for highchart for heart bar graphs-->
+
+Highcharts.chart('containerbp', {
+    chart: {
+        type: 'line'
+    },
+    title: {
+        text: 'Blood Pressure History'
+    },
+    subtitle: {
+        text: ''
+    },
+    xAxis: {
+        categories: week_dates
+    },
+    yAxis: {
+        title: {
+            text: 'Blood Pressure mmHg'
+        }
+    },
+    plotOptions: {
+        line: {
+            dataLabels: {
+                enabled: true
+            },
+            enableMouseTracking: false
+        }
+    },
+    series: [{
+        name: 'Systolic',
+        data: values_hp
+    }, {
+        name: 'Diastolic',
+        data: values_lp
+    }]
+});
+});
+        </script>
+    <!--ending script for highchart for heart bar graphs-->
+</div>
+<!-- /#page-wrapper -->

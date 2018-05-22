@@ -1,0 +1,101 @@
+<%layout('../layout')%>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header" >Senior Citizen Assistance App</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<!--<script src="https://code.highcharts.com/highcharts-3d.js"></script>-->
+
+<!--starting div for highchart for sleep bar graphs-->
+<div id="containersleep" style="height: 500px;min-width:100px;"></div>
+<!--ending div for highchart for sleep bar graphs-->
+</div>
+
+<script>
+var access_token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2SDNTQlEiLCJhdWQiOiIyMkNQMlAiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3aHIgd251dCB3cHJvIHdzbGUgd3dlaSB3c29jIHdzZXQgd2FjdCB3bG9jIiwiZXhwIjoxNTU2NTI1NDU5LCJpYXQiOjE1MjQ5ODk0NTl9.RPWUBdOMpGa0JAId0vlJZVQDDEn8yGfCYcTs1x4niSA";
+//ajax function to get data
+var dates=[];
+var values=[];
+var week_dates=[];
+var sleep=[];
+var time_in_bed=[];
+
+function sleepData(callback){
+$.ajax({
+  headers:
+  {
+    "Authorization":"Bearer " + access_token
+  },
+
+  url: "https://api.fitbit.com/1.2/user/-/sleep/date/2018-04-30/2018-05-07.json",
+  dataType: 'json',
+  success: function(data) {
+  callback(data);
+  },
+  error: function() {
+    alert("error");
+  }
+});
+}
+
+//iterating through json data
+sleepData(function(data){
+  var x= data['sleep'];
+  for(var i=0;i<x.length;i++){
+      dates.push(data['sleep'][i]['dateOfSleep']);
+      console.log(dates);
+      var sleep_hours=Math.round((data['sleep'][i]['minutesAsleep'])/60);
+      sleep.push(sleep_hours);
+      var time_bed=Math.round((data['sleep'][i]['timeInBed'])/60);
+      time_in_bed.push(time_bed);
+      console.log(time_in_bed);
+
+  }
+  //last one week dates
+  week_dates=dates.slice(dates.length - 3, dates.length);
+   //console.log(week_dates);
+   //values=steps.slice(steps.length - 7, steps.length);
+   Highcharts.chart('containersleep', {
+       chart: {
+           type: 'line'
+       },
+       title: {
+           text: 'Sleep Information'
+       },
+       subtitle: {
+           //text: 'Source: WorldClimate.com'
+       },
+       xAxis: {
+           categories: week_dates
+       },
+       yAxis: {
+           title: {
+               text: 'Hours'
+           }
+       },
+       plotOptions: {
+           line: {
+               dataLabels: {
+                   enabled: true
+               },
+               enableMouseTracking: false
+           }
+       },
+       series: [{
+           name: 'MinutesAsleep',
+           data: sleep
+       }, {
+           name: 'TimeInBed',
+           data: time_in_bed
+       }]
+   });
+ });
+</script>
+</div>
+<!-- /#page-wrapper -->

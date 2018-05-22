@@ -1,0 +1,126 @@
+<%layout('../layout')%>
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header" >Senior Citizen Assistance App</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<!--<script src="https://code.highcharts.com/highcharts-3d.js"></script>-->
+
+
+
+
+
+<!--starting div for highchart for heart bar graphs-->
+ <!-- <div style="width:560px;"> -->
+<div id="containercalorie" style="min-width:100px; height: 300px;margin-top:200px"></div>
+
+<!-- </div> -->
+    <!--ending div for highchart for heart bar graphs-->
+
+<!--Starting div for highchart for step bar graphs-->
+</div>
+
+
+
+<!--starting script for highchart for step bar graphs-->
+<script>
+var access_token="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2SDNTQlEiLCJhdWQiOiIyMkNQMlAiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJ3YWN0IiwiZXhwIjoxNTI1ODQyODY1LCJpYXQiOjE1MjU4MTQwNjV9._gzmr8h-33Pebdy8WaWjEJk2ztH6Ui0kIiVgOMMl7s0";
+//ajax function to get data
+var dates=[];
+var values=[];
+var week_dates=[];
+var steps=[];
+
+function ajax(callback){
+$.ajax({
+  headers:
+  {
+    //"Authorization":"Bearer " + access_token
+  },
+
+  url: "https://05elgrj7u0.execute-api.us-east-2.amazonaws.com/caloriemob/caloriemob",
+  dataType: 'json',
+  success: function(data) {
+  callback(data);
+  },
+  error: function() {
+    alert("error");
+  }
+});
+}
+
+//iterating through json data
+ajax(function(output){
+  var x=output['activities-calories'];
+  console.log(x);
+  for(var i=0;i<x.length;i++){
+      dates.push(output['activities-calories'][i]['dateTime']);
+      steps.push(parseInt(output['activities-calories'][i]['value']));
+  }
+  //last one week dates
+   week_dates=dates.slice(dates.length - 7, dates.length);
+   values=steps.slice(steps.length - 7, steps.length);
+
+
+//High charts
+$(function() {
+  Highcharts.chart('containercalorie', {
+    chart: {
+        type: 'areaspline'
+    },
+    title: {
+        text: 'Average Calories during one week'
+    },
+    legend: {
+        layout: 'vertical',
+        align: 'left',
+        verticalAlign: 'top',
+        x: 150,
+        y: 100,
+        floating: true,
+        borderWidth: 1,
+        backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+    },
+    xAxis: {
+        categories: week_dates,
+        plotBands: [{ // visualize the weekend
+            color: 'rgba(68, 170, 213, .2)'
+        }]
+    },
+    yAxis: {
+        title: {
+            text: 'Calories'
+        }
+    },
+    tooltip: {
+        shared: true,
+        valueSuffix: ' units'
+    },
+    credits: {
+        enabled: false
+    },
+    plotOptions: {
+      areaspline: {
+        pointPlacement: 'on'
+    }
+    },
+    series: [ {
+        name:'Calories',
+        data: values
+    }]
+});
+});
+});
+</script>
+<!--ending script for highchart for step bar graphs-->
+
+
+
+</div>
+<!-- /#page-wrapper -->
