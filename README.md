@@ -1,5 +1,5 @@
 # SB Admin 2 Node.js
-Famous bootstrap template(free) + Node.js + mongoDB
+Bootstrap template + Node.js + mongoDB
 
 
 
