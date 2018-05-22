@@ -19,8 +19,8 @@ Install and start mongoDB. (http://www.mongodb.org)
 
 #### 2. Clone SB Admin 2 Node.js
 
-	$ git clone https://github.com/EunsanKo/node-sbadmin.git
-	$ cd node-sbadmin
+	$ git clone https://github.com/nisha-raghu/SeniorCitizenAssitance-WebApp.git
+	$ cd SeniorCitizenAssitance-WebApp
 	$ npm install
 
 #### 3. Start SB Admin 2 Node.js
