@@ -25,7 +25,8 @@ Install and start mongoDB. (http://www.mongodb.org)
 
 #### 3. Start SB Admin 2 Node.js
 
-	$ node ./bin/www
+	$ node ./bin/www or
+	$ npm start
 
 #### 4. Start development
 
